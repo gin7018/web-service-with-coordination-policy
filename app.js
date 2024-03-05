@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import {authRouter} from "./src/routes/auth.js";
 import {messagingRouter} from "./src/routes/messaging.js";
 
-const PORT = process.env["PORT"] || 4000;
+const PORT = 4000;
 export const app = express();
 
 app.use(express.json());
