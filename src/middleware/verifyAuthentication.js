@@ -6,11 +6,19 @@ export function verifyAuthentication(req, res, next) {
         res.status(400).json({message: 'access denied; missing auth token'});
         return;
     }
-    const secretKey = process.env["JWT_SECRET_KEY "] || 'super_secret_key';
+    const secretKey = 'super_secret_key';
     const verified = jwt.verify(token, secretKey);
-    if (!verified) {
+    if (!verified ) {
+        console.error('[AUTH SERVICE] authentication failed; invalid token');
         res.status(400).json({message: 'authentication failed; invalid token'});
         return;
     }
+    if (verified.username !== req.body.username) {
+        console.error('[AUTH SERVICE] authentication failed; invalid token for this user');
+        res.status(400).json({message: 'authentication failed; invalid token for this user'});
+        return;
+    }
+    req.username = verified.username;
+    console.log('[AUTH SERVICE] authentication successful');
     next(); // perform the next callback operation
 }

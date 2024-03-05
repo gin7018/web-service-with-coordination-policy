@@ -6,7 +6,7 @@ export const messagingRouter = express.Router();
 
 messagingRouter.get('/receive', verifyAuthentication, async (req, res) => {
     try {
-        const {username} = req.headers;
+        const {username} = req.body;
         const messagesSentToUser = await Message
             .findOne({receiver: username})
             .sort({timestamp: "desc"});
@@ -16,7 +16,7 @@ messagingRouter.get('/receive', verifyAuthentication, async (req, res) => {
             sender: messagesSentToUser.sender
         }
         res.status(200).json({...responsePayload});
-        console.log(`[MESSAGE SERVICE] received messages}`);
+        console.log(`[MESSAGE SERVICE] received messages; username=${username}`);
     } catch (e) {
         console.error(`[MESSAGE SERVICE] error=${e.message}`);
         res.status(400).json({error: `error receiving messages; error=${e.message}`});
@@ -25,8 +25,7 @@ messagingRouter.get('/receive', verifyAuthentication, async (req, res) => {
 
 messagingRouter.post('/send', verifyAuthentication, async (req, res) => {
     try {
-        const {username} = req.headers;
-        const {receiver, text} = req.body;
+        const {username, receiver, text} = req.body;
 
         const message = new Message({sender:username, receiver, text});
         await message.save();
