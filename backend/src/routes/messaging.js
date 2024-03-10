@@ -1,12 +1,12 @@
-import {verifyAuthentication} from "../middleware/verifyAuthentication.js";
+import {verifyAuthToken} from "../middleware/verifyAuthentication.js";
 import {Message} from "../model/model.js";
 import express from "express";
 
 export const messagingRouter = express.Router();
 
-messagingRouter.get('/receive', verifyAuthentication, async (req, res) => {
+messagingRouter.get('/receive/:username', verifyAuthToken, async (req, res) => {
     try {
-        const {username} = req.body;
+        const username = req.params.username;
         const messagesSentToUser = await Message
             .findOne({receiver: username})
             .sort({timestamp: "desc"});
@@ -23,7 +23,7 @@ messagingRouter.get('/receive', verifyAuthentication, async (req, res) => {
     }
 });
 
-messagingRouter.post('/send', verifyAuthentication, async (req, res) => {
+messagingRouter.post('/send', verifyAuthToken, async (req, res) => {
     try {
         const {username, receiver, text} = req.body;
 
